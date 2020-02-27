@@ -29,7 +29,7 @@ https://github.com/inopya/Temporizador_Virtual  (librería para simplicifar el u
 Este es un programa base para datalogger y envío en tiempo real de dichos datos a una estación de tierra mientras el cohete está en vuelo.
 
 Recopila datos de altitud y temperatura mediante un barómetro **BMP_280**, realiza mediciones de ultravioleta con tres sensores **VEML_6070**, y envía datos a una estación de tierra mediante un Transceptor **APC_220**.
-Así mismo utiliza un **zumbador** y la emmisión de la posición GPS para ser localizado una vez en tierra con módulo gps **NEO_M8**.
+Así mismo utiliza un **zumbador** y la emisión de la posición gps para ser localizado una vez en tierra con módulo **GPS_NEO_M8**.
 
 Este montaje usa varios sensores ultravioleta en bus I2C con el inconveniente de que son identicos y por tanto con la misma dirección. Para poder controlarlos utilizamos un pequeño "truco":
 alimentarlos de un pin digital e ir alternando cual está activo al momento de leer informacion desde el bus I2C:
