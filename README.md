@@ -1,8 +1,9 @@
 # CanSat_demo
 Programa base para consurso Esero cansat >>  http://esero.es/cansat/
 
-
-REPOSITORIO EN PROCESO......
+```diff
+-REPOSITORIO EN PROCESO......
+```
 
 
 Este repositorio toma el relevo al "Datalogger_en_EEPROM_del_328p" desarrollado para cohetes de agua,
