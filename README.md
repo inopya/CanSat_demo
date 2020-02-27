@@ -29,8 +29,11 @@ Algunas partes aun estan en fase beta.
 
 En este montaje usa varios sensores ultravioleta con el inconveniente de que son todos iguales y por tanto con la misma direccion, para ello utilizamos un pequeño "truco":
 alimentarlos de un pin digital e ir alternando cual esta activo al momento de leer la informacion:
-vease el esquema:
+
+**vease el esquema:**
 
 ![](./conexionUV.png)
 
+**Toma de muestras y visualizacion de UVmax desde 2x VELM6070 sobre el mismo bus I2C**
 
+![](./uv_x2_sample.jpg)
