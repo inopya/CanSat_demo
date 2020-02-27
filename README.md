@@ -2,6 +2,9 @@
 Programa base para consurso Esero cansat >>  http://esero.es/cansat/
 
 
+REPOSITORIO EN PROCESO......
+
+
   Este repositorio toma el relevo al Datalogger_en_EEPROM_del_328p
   
   que se puede encontrar en
@@ -24,4 +27,10 @@ Recopila datos de presion y temperatura mediante un barometro, relaiza medicione
 
 Algunas partes aun estan en fase beta.
 
-EN PROCESO......
+En este montaje usa varios sensores ultravioleta con el inconveniente de que son todos iguales y por tanto con la misma direccion, para ello utilizamos un pequeño "truco":
+alimentarlos de un pin digital e ir alternando cual esta activo al momento de leer la informacion:
+vease el esquema:
+
+![](./conexionUV.png)
+
+
