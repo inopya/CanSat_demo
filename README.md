@@ -50,3 +50,18 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 ```
 
 ![](./montajeCansatDemo.jpg)
+
+****
+**Componentes***
+
+    1x ARDUINO NANO
+    3x VEML_6070
+    1x BMP_280
+    1x Zumbador
+    1x GPS NEO 8M
+    1x APC220
+    3x 2N3906 (u otro transistor PNP similar)
+    1x Pulsador
+    1x Resistencia 10K
+    1x Bateria LiPo/Lion (reciclada de movil, tablet..)
+    1x Interrutor
