@@ -41,3 +41,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 **Toma de muestras y visualizacion de UVmax desde 2x VELM6070 sobre el mismo bus I2C**
 
 ![](./uv_x2_sample.jpg)
+
+**Cansat Demo, montaje completo en protoboard**
+
+![](./montajeCansatDemo.jpg)
