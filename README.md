@@ -43,7 +43,10 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 ![](./uv_x2_sample.jpg)
 
 
+****
+
 ```diff
 +Cansat Demo, montaje completo en protoboard
 ```
+
 ![](./montajeCansatDemo.jpg)
