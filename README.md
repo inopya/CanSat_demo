@@ -54,7 +54,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 +Cansat Demo, montaje completo en protoboard
 ```
 
-![](./montajeCansatDemo.jpg)
+![](./montajeCansatDemo.png)
 
 ****
 **Componentes**
