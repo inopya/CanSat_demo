@@ -231,7 +231,7 @@ void loop()
       contador_suelo++;
       if(contador_suelo>2){
         //llegada al suelo!!  emitir los datos de GPS
-        baliza_Rescate()
+        baliza_Rescate();
       }
     }    
 
