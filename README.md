@@ -38,7 +38,12 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 
 ![](./conexionUV.png)
 
-**Toma de muestras y visualizacion de UVmax desde 2x VELM6070 sobre el mismo bus I2C**
+
+****
+
+```diff
++Toma de muestras y visualizacion de UVmax desde 2x VELM6070 sobre el mismo bus I2C
+```
 
 ![](./uv_x2_sample.jpg)
 
@@ -65,3 +70,4 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
     1x Resistencia 10K
     1x Bateria LiPo/Lion (reciclada de movil, tablet..)
     1x Interrutor
+    Cables Dupont y protoboard
