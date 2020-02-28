@@ -52,7 +52,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 ![](./montajeCansatDemo.jpg)
 
 ****
-**Componentes***
+**Componentes**
 
     1x ARDUINO NANO
     3x VEML_6070
