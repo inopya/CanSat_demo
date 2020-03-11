@@ -35,6 +35,7 @@
 #define PIN_ALTAVOZ          9
 #define ANTENA_RX           10
 #define ANTENA_TX           11
+#define LED_ONBOARD         13
 
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 //        SECCION DE CREACION DE OBJETOS
@@ -118,7 +119,8 @@ void setup()
   pinMode(UV_2, OUTPUT);
   pinMode(UV_3, OUTPUT);
   pinMode(PIN_ALTAVOZ, OUTPUT);
-
+  pinMode(LED_ONBOARD, OUTPUT);
+ 
 
   /* inicializamos el puerto serie para el PC  (pruebas) */
   Serial.begin(9600);
@@ -264,10 +266,10 @@ void loop()
 
   //------> inicio de bloque de EJEMPLO de temporizadores inopya  
   if(intervaloParpadeo.estado()==false){
-    intervaloParpadeo.begin(200);         // tiempo apagado + t. encendido
-    ledOn.begin(150);                     // tiempo encendido
+    intervaloParpadeo.begin(200);               // tiempo apagado + t. encendido
+    ledOn.begin(150);                           // tiempo encendido
   }  
-  digitalWrite(3, ledOn.estado());  //ojo este pin esta usado en el montaje real por un sensor UV
+  digitalWrite(LED_ONBOARD, ledOn.estado());    
   //<------  fin de bloque de  EJEMPLO de temporizadores                                                                                                                                                                                                                           
 }
 
