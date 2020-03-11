@@ -75,7 +75,10 @@ Temporizador_inopya ledOn;
 #define INTERVALO_MUESTRAS    1000    // tiempo en milisegundos entre cada muestra
                                       // Recordad que disponemos de memoria para 204 muestras,
                                       // dependiendo del intervalo, tendremos mayor o menor tiempo de grabacion 
-                        
+
+#define PNP_ON                 LOW    // un transistor PNP se activa con voltaje bajo
+#define PNP_OFF               HIGH    // un transistor PNP se desactiva con voltaje alto
+
 /* creacion de un nuevo tipo de datos para contener las muestras */
 struct CanSatDatos {  
                      int altura; 
@@ -130,7 +133,7 @@ void setup()
 
   /* cortamos la alimentacion a todos los sensores UV */
   for(uint8_t n=0;n<3;n++){
-    digitalWrite(uvSensorList[n], HIGH);  //al ser un transistor PNP se desactiva con voltaje alto  
+    digitalWrite(uvSensorList[n], PNP_OFF);    //al ser un transistor PNP se desactiva con voltaje alto  
   }
 
   /* inicializamos el barometro */    
@@ -145,7 +148,7 @@ void setup()
   /* Configuracion de calibracion */
   bmp280.setPressureOversampleRatio(8);     //2
   bmp280.setTemperatureOversampleRatio(1);
-  bmp280.setFilterRatio(4);                //4
+  bmp280.setFilterRatio(4);                 //4
   bmp280.setStandby(0);                     // 0=desactivado, por tanto el sensor esta activo.
   
   /* Medidas bajo demanda */
@@ -435,18 +438,18 @@ float obtener_UV_max()
   float indice_UV_max = 0.0;                          //reseteamos el indice uv maximo
   
   for(uint8_t j=0;j<3;j++){
-    digitalWrite(uvSensorList[j], HIGH);              //cortamos la alimentacion a todos los sensores
+    digitalWrite(uvSensorList[j], PNP_OFF);           //cortamos la alimentacion a todos los sensores
   }  
   
   for(uint8_t n=0;n<3;n++){
 
-    digitalWrite(uvSensorList[n], LOW);               //alimentamos los sensores secuencialmente
+    digitalWrite(uvSensorList[n], PNP_ON);            //alimentamos los sensores secuencialmente
     delay(10);                                        //pausa para estabilizar la alimentacion
     sensor_UV6070.begin(VEML6070_1_T);                //reiniciamos el sensor (si no no funciona correctamente)
     int lecturaUV_RAW = sensor_UV6070.readUV();       //obtener el valor de luz ultravioleta
     float indice_UV = lecturaUV_RAW/280.0;            //procesamos para obtener indice de radiacion UV
 
-    digitalWrite(uvSensorList[n], HIGH);              //volvemos a apagar el sensor utilizado
+    digitalWrite(uvSensorList[n], PNP_OFF);           //volvemos a apagar el sensor utilizado
     if (indice_UV > indice_UV_max){
       indice_UV_max = indice_UV;
     }
