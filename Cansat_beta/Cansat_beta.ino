@@ -60,8 +60,9 @@ SoftwareSerial radioLink(ANTENA_RX, ANTENA_TX); // RX, TX
 /* creación de  objetos Temporizador_inopya */
 Temporizador_inopya relojMuestras;
 Temporizador_inopya relojControlSuelo;
+Temporizador_inopya relojControlDespegue;
 
-//teporizadores de muestra apra generar un aparpadeo asimetrico un unled sin delay 
+//teporizadores de muestra para generar un parpadeo asimetrico un unled sin delay 
 Temporizador_inopya intervaloParpadeo;
 Temporizador_inopya ledOn;
 
@@ -173,12 +174,14 @@ void setup()
   medirAlturaYTemperatura();
   altura_suelo = altura;
 
-  while((altura - altura_suelo) < 500) {
-    atenderPuertoSerie();   //para poder recuperar los datos de la eeprom
-    medirAlturaYTemperatura();
-    delay(1000);
-    Serial.println("esperando");
+  while((altura - altura_suelo) < 500) {        // esperamos hasta elevarnos al menos 500m 
+    atenderPuertoSerie();                       // para poder recuperar los datos de la eeprom
+    if(relojControlDespegue.estado==false){
+      relojControlDespegue.begin(500);          // 500ms entre chequeos del altimetro
+      medirAlturaYTemperatura();
+      Serial.println("esperando");
     }
+  }
 
   FLAG_uso_eeprom = true;
   relojControlSuelo.begin(15000);
@@ -218,8 +221,10 @@ void loop()
       /* empaquetado de los datos de interes en un 'struct' */
       CanSatDatos datos_actuales = { altura_int, temperatura_int, indiceUv_int };
       radioLink.println(altura_int);
-      saveData(puntero_eeprom, datos_actuales);         //enviamos un dato del tipo 'CanSatDatos'
-      puntero_eeprom+=5;                                //incrementamos el puntero para escritura
+      saveData(puntero_eeprom, datos_actuales);         // guardamos un dato del tipo 'CanSatDatos' 5 bytes
+      puntero_eeprom+=5;                                // incrementamos el puntero para escritura
+                                                        // 2 bytes altura, 2 bytes temperatura, 1 byte indice UV
+      
       /* Si llenamos la eeprom, dejamos de grabar y desactivamos los permisos de acceso*/
       if(puntero_eeprom > 1020 || puntero_eeprom < 5){ 
         FLAG_uso_eeprom = false; // bloqueo de acceso para evitar sobreescribir
@@ -249,7 +254,7 @@ void loop()
     radioLink.println(indiceUv);
     
 
-    /* mostar datos por serial (solo apra pruebas, eliminar del programa final */
+    /* mostar datos por serial (solo apra pruebas, eliminar del programa final) */
     Serial.print(altura);
     Serial.print("*");
     Serial.print(temperatura);
@@ -257,14 +262,14 @@ void loop()
     Serial.println(indiceUv);
   }
 
-  /* control de alitud para detectar llegada al suelo */
+  /* control de altitud para detectar llegada al suelo */
   if(relojControlSuelo.estado()== false){
     relojControlSuelo.begin(10000);
     altura_anterior = altura;
   }
 
 
-  //------> inicio de bloque de EJEMPLO de temporizadores inopya  
+  //------> inicio de bloque de EJEMPLO de temporizadores inopya (eliminar del programa final)  
   if(intervaloParpadeo.estado()==false){
     intervaloParpadeo.begin(200);               // tiempo apagado + t. encendido
     ledOn.begin(150);                           // tiempo encendido
@@ -349,7 +354,7 @@ void listar_datos()
     Serial.println(indiceUV_float);
     
     /* incrementar el puntero de lectura de la eeprom */
-    puntero_lectura +=5;
+    puntero_lectura +=5;  // 2 bytes altura, 2 bytes temepratura, 1 byte indice UV
   }
 }
 
