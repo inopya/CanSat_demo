@@ -67,6 +67,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
     1x APC220
     3x 2N3906 (u otro transistor PNP similar)
     3x Resistencias 1-10 kΩ
+    3x Diodo 1N5819 (o equivalente)
     1x Pulsador
     1x Resistencia 10 kΩ
     1x Bateria LiPo/Lion (reciclada de movil, tablet..)
