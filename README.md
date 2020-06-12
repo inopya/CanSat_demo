@@ -66,6 +66,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
     1x GPS NEO 8M
     1x APC220
     3x 2N3906 (u otro transistor PNP similar)
+    3x Resistencias 1-10 kΩ
     1x Pulsador
     1x Resistencia 10K
     1x Bateria LiPo/Lion (reciclada de movil, tablet..)
