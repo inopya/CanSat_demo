@@ -600,22 +600,20 @@ int atenderPeticionesEntrantes(int intervalo_miliseg)
 
 
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-//   FORMATO DE SEPARADORES APRA NVIO DE MENSAJES
+//   FORMATO DE SEPARADORES APRA ENVIO DE MENSAJES
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
 void enviar_mensaje(String mensaje){
 
   radioLink.println(F("********************************************************************"));
-  radioLink.print("Mensaje enviado desde el Cansat de SpaceSix: ");
+  radioLink.print(F("Mensaje de Cansat SpaceSix: "));
   radioLink.println(mensaje);
-  radioLink.println(F("********************************************************************"));
-  radioLink.println("");
+  radioLink.println(F("********************************************************************\n"));
   
   if(DEBUG_MODE){
     Serial.println(F("======================================================================="));
     Serial.println(mensaje);
-    Serial.println(F("======================================================================="));
-    Serial.println("");
+    Serial.println(F("=======================================================================\n"));
   }
 }
 
