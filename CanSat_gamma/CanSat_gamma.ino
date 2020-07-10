@@ -15,7 +15,7 @@
 ##########################################################
 */
 
-#define __VERSION__ "CanSat_Gamma"
+#define __VERSION__ "CanSat_Gamma v0.2"
 
 
 /*
@@ -171,12 +171,8 @@ Universal_GPS_inopya gps(&gpsPort);
 I2C_EEPROM_inopya memory_chip(CHIP_ID);   
 
 /* creación de  objetos Temporizador_inopya */
-Temporizador_inopya relojMuestras;
-Temporizador_inopya relojEscucha;
-Temporizador_inopya relojRecalibracionAltura;
-//Temporizador_inopya relojControlSuelo;  // Reutilizaremos el 'relojRecalibracionAltura' que solo se usa durante el setup,
-                                          // para el control de suelo y asi nos ahorramos 18 bytes de RAM
-
+Temporizador_inopya relojMuestras; //utilizado tambien como (RelojRecalibracionAltura) asi nos ahorramos 18 bytes de RAM
+Temporizador_inopya relojEscucha;  //utilizado tambien como (relojControlSuelo) asi nos ahorramos 18 bytes de RAM
 
 
 
@@ -197,11 +193,13 @@ void tcaselect(uint8_t i) {
 
 void setup() 
 {
-  pinMode(PIN_RESET, OUTPUT);
+
   digitalWrite(PIN_RESET, HIGH);
+  delay(200);
+  pinMode(PIN_RESET, OUTPUT);
  
   pinMode(PIN_ALTAVOZ, OUTPUT);
-  digitalWrite(PIN_RESET, LOW);
+  digitalWrite(PIN_ALTAVOZ, LOW);
   
   /* inicializamos el puerto serie para el PC  (pruebas) */
   Serial.begin(9600);
@@ -238,7 +236,7 @@ void setup()
       altura_para_empezar_a_medir = radioLink.parseInt();
     }  
     if(altura_para_empezar_a_medir >= 1){
-      Serial.println(altura_para_empezar_a_medir);
+      //Serial.println(altura_para_empezar_a_medir);
       radioLink.print(F("Fijado el umbral de lanzamiento a "));
       radioLink.print(altura_para_empezar_a_medir);
       radioLink.println(F(" metros\n"));
@@ -254,20 +252,20 @@ void setup()
 
     // Cada cierto tiempo recalibramos la altura_suelo para compensar las variaciones meteorológicas
     // Y comprobamos que el GPS recibe bien los datos
-    if (relojRecalibracionAltura.estado() == false){
+    if (relojMuestras.estado() == false){
       medirAlturaYTemperatura();
       altura_suelo = altura;
-      radioLink.print(F("Recalibrando el sensor de Altitud, Altura suelo medida: "));
+      radioLink.print(F("Recalibrando el sensor de Altitud a: "));
       radioLink.print(altura_suelo);
       radioLink.println(F("\n- Presione L para empezar a tomar datos o D para ver los datos del lanzamiento anterior\n"));
       
       if(DEBUG_MODE){
-        Serial.print(F("Recalibrando el sensor de Altitud, Altura suelo medida: "));
+        Serial.print(F("Recalibrando el sensor de Altitud a: "));
         Serial.println(altura_suelo);
         Serial.println(F("\n- Presione L para empezar a tomar datos o D para ver los datos del lanzamiento anterior\n"));
       }
       comunicar_posicion();
-      relojRecalibracionAltura.begin(INTERVALO_RECALIBRACION_ALTURA); 
+      relojMuestras.begin(INTERVALO_RECALIBRACION_ALTURA); 
     }
 
     // Atiende las posibles ordenes entrantes por radio o puerto serie durante 2 segundos
@@ -302,10 +300,10 @@ void setup()
   if (DEBUG_MODE) {
     sonidoLanzamiento();
   }
-  tiempo_base = millis();  //para incluir una referencia de tiempo (relativa) en las transmisiones
-  //relojControlSuelo.begin(15000); 
-  relojRecalibracionAltura.begin(15000); //reusamos este reloj apra ahorra unos bytes de ram
- 
+  tiempo_base = millis();  //para incluir una referencia de tiempo (relativa) en las transmisiones 
+  relojEscucha.stop(); //paramos el temporizador para poder cargarle nuevos tiempos
+  relojEscucha.begin(15000);
+  relojMuestras.stop();
 }
 
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm 
@@ -330,56 +328,62 @@ void loop()
     // Si no queda espacio en la EEPROM esta función activará la baliza de rescate
     guardarDatosMemoria();
 
-    /* Actualizamos el dato de altura maxima alcanzada, por si lo usamos para algo */
-    if (altura > altura_maxima){
+    /* Transmitir datos por radio a tierra */
+    transmitir_por_radio();
+
+    /* Actualizamos el dato de altura maxima alcanzada */
+    if ( altura>altura_maxima ){
       altura_maxima = altura;
     }
-
-    /* Controlar la llegada al suelo */
-//    if (abs(altura - altura_anterior)<1){
-//      if(contador_suelo>2){
-//        //llegada al suelo!!  emitir los datos de GPS
-//        baliza_Rescate();
-//      }
-//      contador_suelo++;
-//    }
     
-    /* control de altitud para detectar llegada al suelo (relojControlSuelo)*/ 
-    if(relojRecalibracionAltura.estado()== false){
-      relojRecalibracionAltura.begin(10000);
+    /* Enviar coordenadas durante la parte final de la caida  para ir facilitando el rescate */
+    if( altura<(altura_maxima-200) && altura>(altura_suelo+350) ){
+      comunicar_posicion(); 
+    }
+    
+    /* Control para detectar la llegada al suelo */ 
+    if(relojEscucha.estado()== false){
+      relojEscucha.begin(10000);
       if (abs(altura - altura_anterior)<1){
         if(contador_suelo>2){
-          //llegada al suelo!!  emitir los datos de GPS
-          baliza_Rescate();
+            baliza_Rescate();  /* llegada al suelo!!  emitir los datos de GPS como unica tarea */
         }
         contador_suelo++;
       }
       altura_anterior = altura;
     }
-  
-    /* Transmitir datos a tierra */
-    uint32_t tiempo_relativo = millis()-tiempo_base; 
-
-    radioLink.print(tiempo_relativo); radioLink.print(F(",\t\t"));
-    radioLink.print(altura); radioLink.print(F(",\t\t"));
-    radioLink.print(temperatura); radioLink.print(F(",\t\t"));
-    radioLink.print(indiceUv);
-    radioLink.println("");
-   
-    /* mostar datos por serial */ 
-    if(DEBUG_MODE){
-      Serial.print(tiempo_relativo);
-      Serial.print("*");  
-      Serial.print(altura);
-      Serial.print("*");
-      Serial.print(temperatura);
-      Serial.print("*");
-      Serial.print(indiceUv);
-      Serial.println("");
-    }
   }
                                                                                                                                                                                                                         
 }
+
+
+/*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+   TRANSMITIR DATOS A TIERRA
+//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
+
+float transmitir_por_radio()
+{
+  /* Transmitir datos a tierra */
+  uint32_t tiempo_relativo = millis()-tiempo_base; 
+
+  radioLink.print(tiempo_relativo); radioLink.print(F(",\t\t"));
+  radioLink.print(altura); radioLink.print(F(",\t\t"));
+  radioLink.print(temperatura); radioLink.print(F(",\t\t"));
+  radioLink.println(indiceUv);
+ 
+  /* mostar datos por serial */ 
+  if(DEBUG_MODE){
+    Serial.print(tiempo_relativo);
+    Serial.print(F("*"));  
+    Serial.print(altura);
+    Serial.print(F("*"));
+    Serial.print(temperatura);
+    Serial.print(F("*"));
+    Serial.println(indiceUv);
+  }
+}
+
+
 
 
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
@@ -395,10 +399,10 @@ float inicializarBarometro()
   }
   else{
     if(DEBUG_MODE){
-      Serial.println(F("Fallo de Sensor, programa detenido"));
+      Serial.println(F("Fallo de Barometro, programa detenido"));
     }
     /* si no hay barometro, notificamos por radio y quedamos en bucle infinito */
-    radioLink.println(F("Fallo de Sensor, programa detenido"));
+    radioLink.println(F("Fallo de Barometro, programa detenido"));
     while (true) {}  
   }
 
@@ -471,9 +475,9 @@ float obtener_UV_max()
   float indice_UV = lectura_max/280.0;
 
   if (DEBUG_MODE){
-    Serial.print("Sensores UV: "); 
-    Serial.print(lectura_sensor_1/280.0); Serial.print(", ");
-    Serial.print(lectura_sensor_2/280.0); Serial.print(", ");
+    Serial.print(F("Sensores UV: ")); 
+    Serial.print(lectura_sensor_1/280.0); Serial.print(F(", "));
+    Serial.print(lectura_sensor_2/280.0); Serial.print(F(", "));
     Serial.println(lectura_sensor_3/280.0);
     Serial.print(F("indice_UV max: ")); Serial.println(indice_UV);
   }
@@ -526,11 +530,9 @@ void listar_datos()
   uint16_t puntero_lectura = POS_MEM_SESION;
   uint16_t contador_datos = 0;
   
-  Serial.println();
-  Serial.println(F("Tiempo (s), Altura (m), Temperatura (C) ,  Ultravioletas"));
+  Serial.println(F("\nTiempo (s), Altura (m), Temperatura (C) ,  Ultravioletas"));
 
-  radioLink.println();
-  radioLink.println(F("Tiempo (s), Altura (m), Temperatura (C), Ultravioletas"));
+  radioLink.println(F("\nTiempo (s), Altura (m), Temperatura (C), Ultravioletas"));
   
   while(puntero_lectura < EEPROM_SIZE){
     /* recuperar datos de la eeprom */
@@ -549,15 +551,13 @@ void listar_datos()
     Serial.print(contador_datos++); Serial.print(F(","));
     Serial.print(altura_float); Serial.print(F(","));
     Serial.print(temperatura_float);Serial.print(F(","));
-    Serial.print(indiceUV_float);
-    Serial.println("");
+    Serial.println(indiceUV_float);
 
     /* mostar datos por puerto radio */
     radioLink.print(contador_datos++); radioLink.print(F(","));
     radioLink.print(altura_float); radioLink.print(F(","));
     radioLink.print(temperatura_float);radioLink.print(F(","));
-    radioLink.print(indiceUV_float);
-    radioLink.println("");
+    radioLink.println(indiceUV_float);
   }
 }
 
@@ -603,18 +603,35 @@ int atenderPeticionesEntrantes(int intervalo_miliseg)
 //   FORMATO DE SEPARADORES APRA ENVIO DE MENSAJES
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
-void enviar_mensaje(String mensaje){
-
-  radioLink.println(F("********************************************************************"));
+void enviar_mensaje(String mensaje)
+{
+  SeparadorRadio();
   radioLink.print(F("Mensaje de Cansat SpaceSix: "));
   radioLink.println(mensaje);
-  radioLink.println(F("********************************************************************\n"));
-  
+  SeparadorRadio();
+
   if(DEBUG_MODE){
-    Serial.println(F("======================================================================="));
+    SeparadorSerial();
     Serial.println(mensaje);
-    Serial.println(F("=======================================================================\n"));
+    SeparadorSerial();
   }
+}
+
+// FUNCIONES PARA mostrar barra separadoras entre algunos mensajes
+void SeparadorRadio()
+{
+  for(uint8_t i=0;i<70;i++){
+    radioLink.print(F("*"));
+  }
+  radioLink.println();
+}
+
+void SeparadorSerial()
+{
+  for(uint8_t i=0;i<70;i++){
+    Serial.print(F("="));
+  }
+  Serial.println();
 }
 
 
@@ -649,7 +666,7 @@ void comunicar_posicion()
   
   if(DEBUG_MODE){
     Serial.print(F("Longitud ")); Serial.print(gps.longitud,6);
-    Serial.print(" , Latitud "); Serial.println(gps.latitud,6);
+    Serial.print(F(" , Latitud ")); Serial.println(gps.latitud,6);
   }
 }
 
@@ -659,9 +676,7 @@ void comunicar_posicion()
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
 void baliza_Rescate()
-{
-  //INOPYA REVISAR
-  
+{ 
   while(orden_lanzamiento == false ){
     
     /* Generar tono para localizacion */
@@ -696,33 +711,35 @@ void baliza_Rescate()
 
 void baliza_Rescate_original()
 {
+  relojMuestras.stop();
   while(true){
-    /* Generar tono para localizacion */
-    tone(PIN_ALTAVOZ, 2100);  //frecuencia que emite un sonido bastante estridente
-    delay (450);
-    noTone(PIN_ALTAVOZ);
-
-    /* obtener datos del GPS */
-    //gps.get();   comunicar_posicion() incluye el refresco de datos del gps
-    comunicar_posicion();  
-    
-    /* Transmitir datos de HORA GPS */
-    if(gps.hora < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.hora); radioLink.print(F(":"));
-    if(gps.minuto < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.minuto); radioLink.print(F(":"));
-    if(gps.segundo < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.segundo); 
-    radioLink.print(F(" , "));  
-    
-    /* Transmitir datos de FECHA GPS */
-    if(gps.dia < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.dia); radioLink.print(F("/"));
-    if(gps.mes < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.mes); radioLink.print(F("/"));
-    if(gps.year < 10){ radioLink.print(F("0")); }
-    radioLink.print(gps.year);
-
-    delay(5000);  //soy enemigo de los delay, pero.. por ahora se queda aqui
+    if( relojMuestras.estado()==false ){
+      relojMuestras.begin(5000);
+      /* Generar tono para localizacion */
+      tone(PIN_ALTAVOZ, 2100);  //frecuencia que emite un sonido bastante estridente
+      delay (450);
+      noTone(PIN_ALTAVOZ);
+  
+      /* obtener datos del GPS */
+      //gps.get();   comunicar_posicion() incluye el refresco de datos del gps
+      comunicar_posicion();  
+      
+      /* Transmitir datos de HORA GPS */
+      if(gps.hora < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.hora); radioLink.print(F(":"));
+      if(gps.minuto < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.minuto); radioLink.print(F(":"));
+      if(gps.segundo < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.segundo); 
+      radioLink.print(F(" , "));  
+      
+      /* Transmitir datos de FECHA GPS */
+      if(gps.dia < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.dia); radioLink.print(F("/"));
+      if(gps.mes < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.mes); radioLink.print(F("/"));
+      if(gps.year < 10){ radioLink.print(F("0")); }
+      radioLink.print(gps.year);
+    }
   }
 }
