@@ -368,26 +368,8 @@ void obtener_UV_max()
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
 //========================================================
-//  LEER DATOS ALMACENADOS EN EPPROM
-//========================================================
-
-CanSatDatos loadData(int posicion)
-{
-  CanSatDatos muestra;
-  EEPROM.get(posicion, muestra);
-  return muestra;
-}
-
-
-//========================================================
 //  SALVAR DATOS EN LA EPPROM
 //========================================================
-
-void saveData(int posicion, CanSatDatos muestra)
-{
-  EEPROM.put(posicion, muestra);
-}
-
 
 void guardarDatosMemoria(){
   
@@ -558,7 +540,7 @@ void envio_datos()
 
 
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-//   ALTAVOZ:  PARA GENERAR UN SONIDO DURANTE EL LANZAMIENTO
+//   ALTAVOZ:  PARA GENERAR UN SONIDO DURANTE EL LANZAMIENTO  (SIN USO EN ESTA VERSION)
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
 void sonidoLanzamiento(int numRepeticiones){
