@@ -29,7 +29,9 @@ Ultima actualizacion "CanSat_Delta"
    RAM utilizada, 902 bytes (44%).
 
 
-
+```diff
+============================== 
+```
 
 Este repositorio toma el relevo al "Datalogger_en_EEPROM_del_328p" desarrollado para cohetes de agua,
 que se puede encontrar en https://github.com/inopya/Datalogger_en_EEPROM_del_328p
