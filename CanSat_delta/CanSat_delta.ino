@@ -74,7 +74,7 @@
 #include <Universal_GPS_inopya.h>  // Driver "Universal" y simplificado para acceso a GPS Neo6/7/8
 
 
-#define PIN_PULSADOR         2     // Sin uo
+#define PIN_PULSADOR         2     // Sin uso
 #define PIN_RESET            5     // habilitar la posibilidad de un reset controlado por software
 #define PIN_ALTAVOZ          6     // zumbador asociaso a la baliza
 #define ANTENA_RX           11     // pines de comunicacion con la antena RF
