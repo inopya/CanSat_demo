@@ -27,7 +27,7 @@
   Programa para el Cansat del equipo SpaceSix.
       
   Simplificacion de CanSat_Gamma.
-  Dispone de todos los elementos integrados, por tanto es apta para participacion en el concurso ESERO/SANSAT, 
+  Dispone de todos los elementos integrados, por tanto es apta para participacion en el concurso ESERO/CANSAT, 
   pero eliminadas todas las partes correspondientes a debug y testeo de sistemas durante la produccion, 
   convirtiendose  de esta manera en una version mas robusta y menos ávida de recursos.
   Renombradas algunas variables y añadidos algunos comentarios extra para facilitar el uso de este código.
