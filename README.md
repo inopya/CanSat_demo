@@ -5,6 +5,31 @@ Programa base para consurso Esero cansat >>  http://esero.es/cansat/
 -REPOSITORIO EN PROCESO... 
 ```
 
+Ultima actualizacion "CanSat_Delta"
+
+===== NOTAS DE LA VERSION CanSat_Delta ===== 
+  
+  Programa para el Cansat del equipo SpaceSix.
+      
+  Simplificacion de CanSat_Gamma.
+  Dispone de todos los elementos integrados, por tanto es apta para participacion en el concurso ESERO/SANSAT, 
+  pero eliminadas todas las partes correspondientes a debug y testeo de sistemas durante la produccion, 
+  convirtiendose  de esta manera en una version mas robusta y menos ávida de recursos.
+  Renombradas algunas variables y añadidos algunos comentarios extra para facilitar el uso de este código.
+
+  Se corresponde con la version v8 utilizada por los chavales del equipo SpaceSix 
+  y es una optimizacion de dicha version. 
+ 
+   usos de memoria para la v8 antes de optimizar:
+   FLASH, 18802 bytes (58%).
+   RAM utilizada, 1352 bytes (66%).
+
+   usos de memoria para la v8 DESPUES DE OPTIMIZAR:
+   FLASH, 18444 bytes (57%).
+   RAM utilizada, 902 bytes (44%).
+
+
+
 
 Este repositorio toma el relevo al "Datalogger_en_EEPROM_del_328p" desarrollado para cohetes de agua,
 que se puede encontrar en https://github.com/inopya/Datalogger_en_EEPROM_del_328p
