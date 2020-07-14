@@ -5,7 +5,7 @@ Programa base para consurso Esero cansat >>  http://esero.es/cansat/
 -REPOSITORIO EN PROCESO... 
 ```
 
-Ultima actualizacion "CanSat_Delta"
+Ultima actualizacion "CanSat_Delta_mini", version minimalista con lo justo y necesario.
 
 ===== NOTAS DE LA VERSION CanSat_Delta ===== 
   
