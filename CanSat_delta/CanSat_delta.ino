@@ -443,15 +443,15 @@ void listar_datos()
 // FUNCION PARA LECTURA DE CARACTERES POR PUERTO SERIE y RADIO ENLACE
 //========================================================
 
-int atenderPeticionesEntrantes(int intervalo_miliseg) 
+void atenderPeticionesEntrantes(int intervalo_miliseg) 
 {
-  /* Se queda a la escucha del puerto serie durante un intervalo de tiempo determinado */
-  if (relojEscucha.estado() == false){
-      relojEscucha.begin(intervalo_miliseg); 
-    }
+  /* paramos el reloj por si tenia tiempo aun de otras tareas */
+  relojEscucha.stop();
+  relojEscucha.begin(intervalo_miliseg); 
     
-  char orden_recibida = ' ';
-   while(!Serial.available() || !radioLink.available()) {
+  /* Se queda a la escucha del puerto serie durante un intervalo de tiempo determinado */
+  while( relojEscucha.estado() == true ) {
+    char orden_recibida = ' ';
     
     if(Serial.available()){
       orden_recibida = Serial.read();
@@ -459,18 +459,9 @@ int atenderPeticionesEntrantes(int intervalo_miliseg)
     if(radioLink.available()){
       orden_recibida = radioLink.read();
     }
-    if(orden_recibida == 'd' or orden_recibida == 'D'){ 
-      //Serial.flush();
-      listar_datos();
-    }
-    if(orden_recibida == 'l' or orden_recibida == 'L'){ 
-      FLAG_reiniciar_lanzamiento = true;
-    }
-    if (relojEscucha.estado() == false){
-      break;
-    }
+    if( orden_recibida == 'd' or orden_recibida == 'D' ){ listar_datos(); }
+    if( orden_recibida == 'l' or orden_recibida == 'L' ){ FLAG_reiniciar_lanzamiento = true; }
    }
-  return 0;
 }
 
 
