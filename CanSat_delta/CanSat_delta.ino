@@ -148,15 +148,6 @@ int indice_muestra = 0;             // indice de muestra que se enviará por rad
 bool FLAG_reiniciar_lanzamiento = false;   //bandera apra el control de reinicio de lanzamiento desde señal de radio
 
 
-/* Funcion de seleccion del sensor UV que va a estar activo */
-void tcaselect(uint8_t i) {
-  if (i > 7) return;
- 
-  Wire.beginTransmission(TCAADDR);
-  Wire.write(1 << i);
-  Wire.endTransmission();  
-}
-
 
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm 
 //***************************************************************************************************
@@ -335,12 +326,28 @@ void medirAlturaYTemperatura()
 
 
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-//   ULTRAVIOLETAS
+//   ULTRAVIOLETA
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
+
+//========================================================
+//  SELECCION DE SENSOR UV QUE DEBE ESTAR ACTIVO
+//========================================================
+void tcaselect(uint8_t i) 
+{
+  if (i > 7) return;
+
+  Wire.beginTransmission(TCAADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();  
+}
+
+
+//========================================================
+//  OBTENER INDICE UV MAXIMO
+//========================================================
 
 void obtener_UV_max()
 {
-  
   int lectura_UV_max = 0;                  
 
   tcaselect(PUERTO_UV_1);
@@ -435,6 +442,7 @@ void listar_datos()
   }
 }
 
+
 /*mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 //   PUERTO SERIE y RADIO ENLACE
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
@@ -443,22 +451,18 @@ void listar_datos()
 // FUNCION PARA LECTURA DE CARACTERES POR PUERTO SERIE y RADIO ENLACE
 //========================================================
 
-void atenderPeticionesEntrantes(int intervalo_miliseg) 
+void atenderPeticionesEntrantes(uint16_t tiempo_escucha) 
 {
-  /* paramos el reloj por si tenia tiempo aun de otras tareas */
-  relojEscucha.stop();
-  relojEscucha.begin(intervalo_miliseg); 
+  relojEscucha.stop();  //paramos el reloj por si tenia tiempo aun de otras tareas
+  relojEscucha.begin(tiempo_escucha); //le cargamos el tiempo de escucha (en milisegundos)
     
   /* salir de la escucha de comandos si se produce TIMEOUT  del temporizador relojEscucha */ 
   while( relojEscucha.estado() == true ) {
     char orden_recibida = ' ';
     
-    if(Serial.available()){
-      orden_recibida = Serial.read();
-    }
-    if(radioLink.available()){
-      orden_recibida = radioLink.read();
-    }
+    if(Serial.available()){ orden_recibida = Serial.read(); }
+    if(radioLink.available()){ orden_recibida = radioLink.read(); }
+	  
     if( orden_recibida == 'd' or orden_recibida == 'D' ){ listar_datos(); }
     if( orden_recibida == 'l' or orden_recibida == 'L' ){ FLAG_reiniciar_lanzamiento = true; }
    }
