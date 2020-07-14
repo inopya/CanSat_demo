@@ -449,7 +449,7 @@ void atenderPeticionesEntrantes(int intervalo_miliseg)
   relojEscucha.stop();
   relojEscucha.begin(intervalo_miliseg); 
     
-  /* Se queda a la escucha del puerto serie durante un intervalo de tiempo determinado */
+  /* salir de la escucha de comandos si se produce TIMEOUT  del temporizador relojEscucha */ 
   while( relojEscucha.estado() == true ) {
     char orden_recibida = ' ';
     
@@ -471,17 +471,22 @@ void atenderPeticionesEntrantes(int intervalo_miliseg)
 //========================================================
 void enviar_mensaje(String mensaje){
 
-  SeparadorRadio();
+  //SeparadorRadio();
+  radioLink.println(F("***************"));
   radioLink.print(F("Mensaje de Cansat SpaceSix: "));
   radioLink.println(mensaje);
-  SeparadorRadio();
+  //SeparadorRadio();
+  radioLink.println(F("***************"));
 
   if(EN_DEPURACION){
-    SeparadorSerial();
+    //SeparadorSerial();
+    Serial.println(F("==============="));
     Serial.println(mensaje);
-    SeparadorSerial();
+    //SeparadorSerial();
+    Serial.println(F("==============="));  
   }
 }
+
 
 //========================================================
 // MOSTAR BARRA SEPARADORA ENTRE ALGUNOS MENSAJES
