@@ -543,8 +543,8 @@ void envio_datos()
 //   ALTAVOZ:  PARA GENERAR UN SONIDO DURANTE EL LANZAMIENTO  (SIN USO EN ESTA VERSION)
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm*/
 
-void sonidoLanzamiento(int numRepeticiones){
-
+void generarSonido(int numRepeticiones)
+{
   int cont = 0;
   while(cont < numRepeticiones){
     /* Generar tono para localizacion */
@@ -587,12 +587,9 @@ void baliza_Rescate()
   while( true ){
     
     /* Generar tono para localizacion */
-    for(int i =0; i < 5; i++){
-      tone(PIN_ALTAVOZ, 2100);  //frecuencia que emite un sonido bastante estridente
-      delay (450);
-      noTone(PIN_ALTAVOZ);
-    }
+    generarSonido(5);
 
+    /* Enviar cocodenadas GPS por radio */
     comunicar_posicion(); 
     
     enviar_mensaje(F("Cansat en tierra, presione D para ver los datos o L para nuevo lanzamiento"));
