@@ -100,3 +100,9 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
     1x Bateria LiPo/Lion (reciclada de movil, tablet..)
     1x Interrutor
     Cables Dupont y protoboard
+
+
+****
+**Recorrido del cansat durante el lanzamiento de la final nacional Granada**
+
+![](./recorrido-cansat-(zenital).png)
