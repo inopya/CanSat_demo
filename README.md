@@ -106,3 +106,12 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 **Recorrido del cansat durante el lanzamiento de la final nacional Granada**
 
 ![](./recorrido-cansat-(zenital).png)
+
+**Datos de altitud**
+![](./altura.png)
+
+**Datos de UV**
+![](./UV.png)
+
+**Datos de temperatura**
+![](./temperatura.png)
