@@ -1,6 +1,9 @@
 # CanSat_demo
 Programa base para consurso Esero cansat >>  http://esero.es/cansat/
 
+
+¡Conseguida clasificacion como terceros en la final nacional (Granada 16/07/2020)!
+
 ```diff
 -REPOSITORIO EN PROCESO... 
 ```
@@ -103,7 +106,7 @@ alimentarlos de un pin digital e ir alternando cual está activo al momento de l
 
 
 ****
-**Recorrido del cansat durante el lanzamiento de la final nacional Granada**
+**Recorrido del cansat durante el lanzamiento de la final nacional (Granada 16/07/2020)**
 
 ![](./recorrido-cansat-(zenital).png)
 
